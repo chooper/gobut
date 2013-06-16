@@ -88,30 +88,26 @@ func PartHandler(event *irc.Event){
 	if event.Command != "PART" {
 		return
 	}
-	// TODO: Update state
-	log.Println("User left channel = ", event.Arguments)
+	event.Client.SendRawf("NAMES %s", event.Arguments[0])
 }
 
 func JoinHandler(event *irc.Event) {
 	if event.Command != "JOIN" {
 		return
 	}
-	// TODO: Update state
-	log.Println("User joined channel = ", event.Arguments)
+	event.Client.SendRawf("NAMES %s", event.Arguments[0])
 }
 
 func QuitHandler(event *irc.Event) {
 	if event.Command != "QUIT" {
 		return
 	}
-	// TODO: Update state
-	log.Println("User quit = ", event.Arguments)
+	event.Client.SendRawf("NAMES %s", event.Arguments[0])
 }
 
 func ModeHandler(event *irc.Event) {
 	if event.Command != "MODE" {
 		return
 	}
-	// TODO: Update state
-	log.Println("Mode change = ", event.Arguments)
+	event.Client.SendRawf("NAMES %s", event.Arguments[0])
 }
