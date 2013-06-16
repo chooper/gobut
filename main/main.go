@@ -4,8 +4,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	handlers "github.com/chooper/go-bot/handlers"
+	"github.com/chooper/go-bot/handlers"
 	"github.com/mikeclarke/go-irclib"
 	"log"
 	"github.com/kylelemons/go-gypsy/yaml"
@@ -23,9 +22,7 @@ func readConfig(conf_file string) *Config {
 	if err != nil {
 		log.Fatalf("readConfig(%q): %s", file, err)
 	}
-	//return config;
 	botname, _ := file.Get("global.botname")
-
 	network_config, _ := yaml.Child(file.Root, ".network")
 	nickname_node, _ := yaml.Child(network_config, ".nick")
 	servers_node, _ := yaml.Child(network_config, ".servers")
@@ -35,7 +32,7 @@ func readConfig(conf_file string) *Config {
 	servers_node_list := servers_node.(yaml.List)
 	channels_node_list := channels_node.(yaml.List)
 
-	// Config: Copy servers into an arrray
+	// Copy servers into an arrray
 	servers_len := servers_node_list.Len()
 	servers := make([]string, servers_len)
 	for idx := range servers {
@@ -43,13 +40,12 @@ func readConfig(conf_file string) *Config {
 		servers[idx] = servers_node_list.Item(idx).(yaml.Scalar).String()
 	}
 		
-	// Config: Copy channels into an array
+	// Copy channels into an array
 	channels_len := channels_node_list.Len()
 	channels := make([]string, channels_len)
 	for idx := range channels {
 		channels[idx] = channels_node_list[idx].(yaml.Scalar).String()
 	}
-	// End config reading
 	
 	config := Config{botname, nickname, servers, channels}
 	return &config
@@ -63,6 +59,7 @@ func main() {
 
 	// Set up IRC client
 	client := irc.New(config.nickname, config.botname)
+
 	// Register handlers
 	client.AddHandler(handlers.DebugHandler)
 	client.AddHandler(handlers.EchoHandler)
@@ -82,7 +79,7 @@ func main() {
 	
 	// Join channels
 	for _, irc_chan := range config.channels {
-		fmt.Printf("%s: Joining channel %q\n", config.botname, irc_chan)
+		log.Printf("%s: Joining channel %q\n", config.botname, irc_chan)
 		client.Join(irc_chan)
 	}
 	
