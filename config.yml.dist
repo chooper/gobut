@@ -1,0 +1,9 @@
+global:
+    botname: GoTest
+
+network:
+    nick: GoTest
+    channels:
+        - #bottest
+    servers:
+        - irc.example.com:6667
