@@ -9,8 +9,34 @@ import (
 	"strings"
 )
 
+type ChannelState struct {
+	Server	string
+	Channel	string
+	Users	[]string
+}
+
+type ServerState struct {
+	Server		string
+	Channels	map[string] ChannelState
+}
+
+var Servers = make(map[string] *ServerState)
+
 func DebugHandler(event *irc.Event) {
 	log.Println("-> ", event)
+	
+	if event.Command != "PRIVMSG" { 
+		return
+	}
+	
+	message_RE := regexp.MustCompile(`^\.dump(.*)$`)
+	matches := message_RE.FindStringSubmatch(event.Arguments[1])
+	
+	if len(matches) < 1 {
+		return
+	}
+	
+	event.Client.Privmsgf(event.Arguments[0], "state: %q", Servers)
 }
 
 func EchoHandler(event *irc.Event) {
@@ -41,8 +67,21 @@ func NamesHandler(event *irc.Event) {
 	if event.Command != "353" {
 		return
 	}
-	// TODO: Update state
-	log.Println("XXX In channel = ", event.Arguments[3:])
+
+	server := event.Client.Server
+	irc_chan := event.Arguments[2]
+	users := strings.Fields(event.Arguments[3])	// TODO: Track modes
+	
+	var server_state *ServerState
+	var ok bool
+	if server_state, ok = Servers[server]; !ok {
+		server_state = new(ServerState)
+		server_state.Server = server
+		server_state.Channels = make(map[string] ChannelState)
+	}
+	
+	server_state.Channels[irc_chan] = ChannelState{server, irc_chan, users}
+	Servers[server] = server_state
 }
 
 func PartHandler(event *irc.Event){ 
