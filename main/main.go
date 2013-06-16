@@ -57,6 +57,11 @@ func main() {
 	// Register handlers
 	client.AddHandler(handlers.DebugHandler)
 	client.AddHandler(handlers.EchoHandler)
+	client.AddHandler(handlers.NamesHandler)
+	client.AddHandler(handlers.PartHandler)
+	client.AddHandler(handlers.QuitHandler)
+	client.AddHandler(handlers.JoinHandler)
+	client.AddHandler(handlers.ModeHandler)
 	
 	// Connect to server
 	current_server := servers[0] // FIXME: Pick server at random
