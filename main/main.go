@@ -11,23 +11,22 @@ import (
 	"github.com/kylelemons/go-gypsy/yaml"
 )
 
-func readConfig(conf_file string) *yaml.File {
-	config, err := yaml.ReadFile(conf_file);
-	if err != nil {
-		log.Fatalf("readConfig(%q): %s", conf_file, err)
-	}
-	return config;
+type Config struct {
+	botname		string
+	nickname	string
+	servers		[]string
+	channels	[]string
 }
 
-func main() {
-	flag.Parse()
+func readConfig(conf_file string) *Config {
+	file, err := yaml.ReadFile(conf_file);
+	if err != nil {
+		log.Fatalf("readConfig(%q): %s", file, err)
+	}
+	//return config;
+	botname, _ := file.Get("global.botname")
 
-	// Read the config
-	// TODO: Read whole config into a Map we can pass around
-	config := readConfig("config.yml")
-	botname, _ := config.Get("global.botname")
-
-	network_config, _ := yaml.Child(config.Root, ".network")
+	network_config, _ := yaml.Child(file.Root, ".network")
 	nickname_node, _ := yaml.Child(network_config, ".nick")
 	servers_node, _ := yaml.Child(network_config, ".servers")
 	channels_node, _ := yaml.Child(network_config, ".channels")
@@ -51,9 +50,19 @@ func main() {
 		channels[idx] = channels_node_list[idx].(yaml.Scalar).String()
 	}
 	// End config reading
+	
+	config := Config{botname, nickname, servers, channels}
+	return &config
+}
+
+func main() {
+	flag.Parse()
+
+	// Read the config
+	config := readConfig("config.yml")
 
 	// Set up IRC client
-	client := irc.New(nickname, botname)
+	client := irc.New(config.nickname, config.botname)
 	// Register handlers
 	client.AddHandler(handlers.DebugHandler)
 	client.AddHandler(handlers.EchoHandler)
@@ -64,7 +73,7 @@ func main() {
 	client.AddHandler(handlers.ModeHandler)
 	
 	// Connect to server
-	current_server := servers[0] // FIXME: Pick server at random
+	current_server := config.servers[0] // FIXME: Pick server at random
 	err := client.Connect(current_server)
 	if err != nil {
 		// TODO: Don't crash - recover and connect to new server
@@ -72,8 +81,8 @@ func main() {
 	}
 	
 	// Join channels
-	for _, irc_chan := range channels {
-		fmt.Printf("%s: Joining channel %q\n", botname, irc_chan)
+	for _, irc_chan := range config.channels {
+		fmt.Printf("%s: Joining channel %q\n", config.botname, irc_chan)
 		client.Join(irc_chan)
 	}
 	
