@@ -3,13 +3,12 @@
 package main
 
 import (
-	irc "github.com/mikeclarke/go-irclib"
 	"flag"
 	"fmt"
+	handlers "github.com/chooper/go-bot/handlers"
+	"github.com/mikeclarke/go-irclib"
 	"log"
-	"regexp"
-	"strings"
-	yaml "github.com/kylelemons/go-gypsy/yaml"
+	"github.com/kylelemons/go-gypsy/yaml"
 )
 
 func readConfig(conf_file string) *yaml.File {
@@ -20,41 +19,14 @@ func readConfig(conf_file string) *yaml.File {
 	return config;
 }
 
-func debugHandler(event *irc.Event) {
-	message_RE := regexp.MustCompile(`(.*)`)
-	matches := message_RE.FindStringSubmatch(event.Raw)
-	
-	if len(matches) < 1 {
-		return
-	}
-
-	fmt.Printf("-> %q", event)
-}
-
-func echoHandler(event *irc.Event) {
-	if event.Command != "PRIVMSG" {
-		return
-	}
-
-	message_RE := regexp.MustCompile(`^\.echo\s*(.*)$`)
-	matches := message_RE.FindStringSubmatch(event.Arguments[1])
-		
-	if len(matches) < 1 {
-		return
-	}
-
-	echo := strings.Join(strings.Fields(matches[0])[1:], " ")
-	event.Client.Privmsg(event.Arguments[0], echo)
-}
-
 func main() {
 	flag.Parse()
 
 	// Read the config
+	// TODO: Read whole config into a Map we can pass around
 	config := readConfig("config.yml")
 	botname, _ := config.Get("global.botname")
 
-	// map["nick":"GoTest" "channels":["#sandbox"] "servers":["dev.pearachute.net"]]
 	network_config, _ := yaml.Child(config.Root, ".network")
 	nickname_node, _ := yaml.Child(network_config, ".nick")
 	servers_node, _ := yaml.Child(network_config, ".servers")
@@ -83,8 +55,8 @@ func main() {
 	// Set up IRC client
 	client := irc.New(nickname, botname)
 	// Register handlers
-	client.AddHandler(debugHandler)
-	client.AddHandler(echoHandler)
+	client.AddHandler(handlers.DebugHandler)
+	client.AddHandler(handlers.EchoHandler)
 	
 	// Connect to server
 	current_server := servers[0] // FIXME: Pick server at random
