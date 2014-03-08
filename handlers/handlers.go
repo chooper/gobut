@@ -4,8 +4,11 @@ package handlers
 import (
 	irc "github.com/mikeclarke/go-irclib"
 	"log"
+	"os"
 	"regexp"
 	"strings"
+	_ "github.com/lib/pq"
+	"database/sql"
 )
 
 type ChannelState struct {
@@ -110,3 +113,37 @@ func ModeHandler(event *irc.Event) {
 	}
 	event.Client.SendRawf("NAMES %s", event.Arguments[0])
 }
+
+func URLHandler(event *irc.Event) {
+	if event.Command != "PRIVMSG" {
+		return
+	}
+
+	// http://blog.mattheworiordan.com/post/13174566389/url-regular-expression-for-links-with-or-without-the
+	message_RE := regexp.MustCompile(`((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)`)
+	matches := message_RE.FindStringSubmatch(event.Arguments[1])
+
+	if len(matches) < 1 {
+		return
+	}
+
+	url := matches[0]
+	event.Client.Privmsg(event.Arguments[0], url)
+
+	// TODO: Refactor this out
+	database_url := os.Getenv("DATABASE_URL")
+	if database_url == "" {
+		return
+	}
+
+	db, err := sql.Open("postgres", database_url)
+	if err != nil {
+		log.Print(err)
+	}
+
+	_, err = db.Exec("INSERT INTO urls (\"when\", url) VALUES (NOW(), $1)", url)
+	if err != nil {
+		log.Print(err)
+	}
+}
+
