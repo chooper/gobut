@@ -126,6 +126,6 @@ func URLHandler(event *irc.Event) {
 	}
 
 	url := matches[0]
-    robutdb.SaveURL(url)
+    go robutdb.SaveURL(url)
 }
 
