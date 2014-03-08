@@ -1,5 +1,6 @@
 # Bot config file
 config.yml
+.env
 
 # Binary
 go-bot
