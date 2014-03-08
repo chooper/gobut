@@ -1,4 +1,3 @@
-// bot -- Copyright (c) 2013 Charles Hooper
 
 package botconf
 

@@ -1,4 +1,3 @@
-// handlers -- Copyright (c) 2013 Charles Hooper
 
 package handlers
 
