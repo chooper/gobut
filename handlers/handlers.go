@@ -4,11 +4,9 @@ package handlers
 import (
 	irc "github.com/mikeclarke/go-irclib"
 	"log"
-	"os"
 	"regexp"
 	"strings"
-	_ "github.com/lib/pq"
-	"database/sql"
+    "github.com/chooper/go-bot/robutdb"
 )
 
 type ChannelState struct {
@@ -128,21 +126,6 @@ func URLHandler(event *irc.Event) {
 	}
 
 	url := matches[0]
-
-	// TODO: Refactor this out
-	database_url := os.Getenv("DATABASE_URL")
-	if database_url == "" {
-		return
-	}
-
-	db, err := sql.Open("postgres", database_url)
-	if err != nil {
-		log.Print(err)
-	}
-
-	_, err = db.Exec("INSERT INTO urls (\"when\", url) VALUES (NOW(), $1)", url)
-	if err != nil {
-		log.Print(err)
-	}
+    robutdb.SaveURL(url)
 }
 
