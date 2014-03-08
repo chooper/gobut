@@ -128,7 +128,6 @@ func URLHandler(event *irc.Event) {
 	}
 
 	url := matches[0]
-	event.Client.Privmsg(event.Arguments[0], url)
 
 	// TODO: Refactor this out
 	database_url := os.Getenv("DATABASE_URL")
