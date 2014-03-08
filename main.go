@@ -13,7 +13,7 @@ func main() {
 	flag.Parse()
 
 	// Read the config
-	config := botconf.ReadConfig("config.yml")
+	config := botconf.ReadConfig()
 
 	// Set up IRC client
 	client := irc.New(config.Nickname, config.Botname)
