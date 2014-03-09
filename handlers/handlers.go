@@ -2,11 +2,15 @@
 package handlers
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	irc "github.com/mikeclarke/go-irclib"
 	"log"
+	"net/http"
+	"net/url"
 	"regexp"
 	"strings"
-    "github.com/chooper/go-bot/robutdb"
+	"github.com/chooper/go-bot/robutdb"
 )
 
 type ChannelState struct {
@@ -21,6 +25,13 @@ type ServerState struct {
 }
 
 var Servers = make(map[string] *ServerState)
+
+type UrlInfo struct {
+	Url			 string	  `json:"url"`
+	Title		   string	  `json:"title"`
+	ContentType	 string	  `json:"content-type"`
+	ContentLength   int64	   `json:"content-length"`
+}
 
 func DebugHandler(event *irc.Event) {
 	log.Println("-> ", event)
@@ -125,7 +136,37 @@ func URLHandler(event *irc.Event) {
 		return
 	}
 
-	url := matches[0]
-    go robutdb.SaveURL(url)
+	target_url := matches[0]
+
+	// TODO: Don't hardcode this
+	api_url, err := url.Parse("http://urinfo.herokuapp.com/fetch")
+	if err != nil {
+		log.Print(err)
+	}
+	
+	api_query := api_url.Query()
+	api_query.Set("url", target_url)
+	api_url.RawQuery = api_query.Encode()
+
+	response, err := http.Get(api_url.String())
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	var info UrlInfo
+	if err = json.Unmarshal([]byte(body), &info); err != nil {
+		log.Print(err)
+		return
+	} 
+
+	go robutdb.SaveURL(info.Url, info.Title)
 }
 

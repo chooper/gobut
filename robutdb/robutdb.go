@@ -8,7 +8,7 @@ import (
     "database/sql"
 )
 
-func SaveURL(url string) error {
+func SaveURL(url string, title string) error {
     // Grab env var, return if not set
     database_url := os.Getenv("DATABASE_URL")
     if database_url == "" {
@@ -17,12 +17,13 @@ func SaveURL(url string) error {
 
     // Connect to DB
     db, err := sql.Open("postgres", database_url)
+
     if err != nil {
         log.Print(err)
     }
 
     // Insert URL into DB
-    _, err = db.Exec("INSERT INTO urls (\"when\", url) VALUES (NOW(), $1)", url)
+    _, err = db.Exec("INSERT INTO urls (\"when\", url, title) VALUES (NOW(), $1, $2)", url, title)
     if err != nil {
         log.Print(err)
     }
