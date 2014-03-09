@@ -27,10 +27,10 @@ type ServerState struct {
 var Servers = make(map[string] *ServerState)
 
 type UrlInfo struct {
-	Url			 string	  `json:"url"`
-	Title		   string	  `json:"title"`
-	ContentType	 string	  `json:"content-type"`
-	ContentLength   int64	   `json:"content-length"`
+	Uri	string `json:"uri"`
+	Title string `json:"title"`
+	ContentType string `json:"content-type"`
+	ContentLength int64 `json:"content-length"`
 }
 
 func DebugHandler(event *irc.Event) {
@@ -136,19 +136,19 @@ func URLHandler(event *irc.Event) {
 		return
 	}
 
-	target_url := matches[0]
+	target_uri := matches[0]
 
 	// TODO: Don't hardcode this
-	api_url, err := url.Parse("http://urinfo.herokuapp.com/fetch")
+	api_uri, err := uri.Parse("http://urinfo.herokuapp.com/fetch")
 	if err != nil {
 		log.Print(err)
 	}
 	
-	api_query := api_url.Query()
-	api_query.Set("url", target_url)
-	api_url.RawQuery = api_query.Encode()
+	api_query := api_uri.Query()
+	api_query.Set("uri", target_uri)
+	api_uri.RawQuery = api_query.Encode()
 
-	response, err := http.Get(api_url.String())
+	response, err := http.Get(api_uri.String())
 	if err != nil {
 		log.Print(err)
 		return
@@ -167,6 +167,6 @@ func URLHandler(event *irc.Event) {
 		return
 	} 
 
-	go robutdb.SaveURL(info.Url, info.Title)
+	go robutdb.SaveURL(info.Uri, info.Title)
 }
 
