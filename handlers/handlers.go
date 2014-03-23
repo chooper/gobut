@@ -29,8 +29,7 @@ var Servers = make(map[string] *ServerState)
 type Urinfo struct {
 	Uri	string `json:"uri"`
 	Title string `json:"title"`
-	ContentType string `json:"content-type"`
-	ContentLength int64 `json:"content-length"`
+	Headers map[string]string `json:"headers"`
 }
 
 func DebugHandler(event *irc.Event) {
