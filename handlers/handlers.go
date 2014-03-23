@@ -167,6 +167,6 @@ func URLHandler(event *irc.Event) {
 		return
 	} 
 
-	go robutdb.SaveURL(info.Uri, info.Title)
+	go robutdb.SaveURL(info.Uri, info.Title, event.Prefix)
 }
 
