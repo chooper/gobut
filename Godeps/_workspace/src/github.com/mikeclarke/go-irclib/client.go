@@ -308,9 +308,9 @@ func defaultHandlers(event *Event) {
 		client.SendRawf("NICK %s", client.currentNickname)
 
 	case "PONG":
-		ns, _ := strconv.ParseInt(event.Raw, 10, 64)
+		ns, _ := strconv.ParseInt(event.Arguments[1], 10, 64)
 		delta := time.Duration(time.Now().UnixNano() - ns)
-		log.Printf("Lag: %vs\n", delta)
+		log.Printf("Lag: %v\n", delta)
 
 	case "001":
 		// client.currentNickname = event.Arguments[0]
