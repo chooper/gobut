@@ -26,11 +26,10 @@ type ServerState struct {
 
 var Servers = make(map[string] *ServerState)
 
-type UrlInfo struct {
+type Urinfo struct {
 	Uri	string `json:"uri"`
 	Title string `json:"title"`
-	ContentType string `json:"content-type"`
-	ContentLength int64 `json:"content-length"`
+	Headers map[string]string `json:"headers"`
 }
 
 func DebugHandler(event *irc.Event) {
@@ -161,7 +160,7 @@ func URLHandler(event *irc.Event) {
 		return
 	}
 
-	var info UrlInfo
+	var info Urinfo
 	if err = json.Unmarshal([]byte(body), &info); err != nil {
 		log.Print(err)
 		return
