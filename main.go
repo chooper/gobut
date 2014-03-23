@@ -29,11 +29,10 @@ func main() {
 	client.AddHandler(handlers.URLHandler)
 	
 	// Connect to server
-	current_server := config.Servers[0] // FIXME: Pick server at random
-	err := client.Connect(current_server)
+	err := client.Connect(config.Server)
 	if err != nil {
 		// TODO: Don't crash - recover and connect to new server
-		log.Fatalf("Error connecting to server %q: %s\n", current_server, err)
+		log.Fatalf("Error connecting to server %q: %s\n", config.Server, err)
 	}
 	
 	// Join channels
