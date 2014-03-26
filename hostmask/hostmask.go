@@ -7,8 +7,8 @@ import (
 )
 
 # A hostmask, typically the "prefix" portion of an IRC message
-# originating from a client, looks like "user!ident@host" and can
-# use standard globbing for matching.
+# originating from a client, looks like "user!ident@host". It's
+# commonplace to use standard globbing for matching.
 # RFC 2812 SS 2.3 Messages https://tools.ietf.org/html/rfc2812
 
 type Hostmask string
