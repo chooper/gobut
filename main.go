@@ -26,6 +26,7 @@ func main() {
 	client.AddHandler(handlers.QuitHandler)
 	client.AddHandler(handlers.JoinHandler)
 	client.AddHandler(handlers.ModeHandler)
+	client.AddHandler(handlers.FuckYeahHandler)
 	client.AddHandler(handlers.URLHandler)
 	
 	// Connect to server
