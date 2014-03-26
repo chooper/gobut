@@ -122,6 +122,29 @@ func ModeHandler(event *irc.Event) {
 	event.Client.SendRawf("NAMES %s", event.Arguments[0])
 }
 
+func FuckYeahHandler(event *irc.Event) {
+    if event.Command != "PRIVMSG" {
+        return
+    }
+
+    message_RE := regexp.MustCompile(`fuck yeah ([\w\d]+)`)
+    matches := message_RE.FindStringSubmatch(event.Arguments[1])
+
+    if len(matches) < 1 {
+        return
+    }
+
+    phrase := matches[0]
+    uri := "http://fuckyeah.herokuapp.com/" + phrase + ".jpg"
+
+    // let app try to cache the result
+    cache := func() { r, _ := http.Get(uri); r.Body.Close() }
+    go cache()
+
+    event.Client.Privmsg(event.Arguments[0], uri)
+}
+
+
 func URLHandler(event *irc.Event) {
 	if event.Command != "PRIVMSG" {
 		return
