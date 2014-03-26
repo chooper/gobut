@@ -33,12 +33,24 @@ func TestMatches(t *testing.T) {
         t.Errorf("mask should not match bad_pattern")
     }
 
+    if bad_pattern.Matches(mask) {
+        t.Errorf("bad_pattern should not match mask")
+    }
+
     if !mask.Matches(good_pattern) {
         t.Errorf("mask should match good_pattern")
     }
 
+    if !good_pattern.Matches(mask) {
+        t.Errorf("good_pattern should match mask")
+    }
+
     if !mask.Matches("*") {
         t.Errorf("mask should match a wildcard")
+    }
+
+    if !Hostmask("*").Matches(mask) {
+        t.Errorf("wildcard should match a mask")
     }
 
     if !mask.Matches(mask) {
