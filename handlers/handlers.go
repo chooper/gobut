@@ -135,7 +135,7 @@ func FuckYeahHandler(event *irc.Event) {
     }
 
     phrase := matches[0]
-    uri := "http://fuckyeah.herokuapp.com/" + phrase + ".jpg"
+    uri := "http://fuckyeah.herokuapp.com/" + url.QueryEscape(phrase) + ".jpg"
 
     // let app try to cache the result
     cache := func() { r, _ := http.Get(uri); r.Body.Close() }
