@@ -1,4 +1,4 @@
-# go-bot
+# gobut
 
 ## Configuration and running go-bot
 
