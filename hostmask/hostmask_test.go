@@ -26,23 +26,46 @@ func TestNickIdentHost(t *testing.T) {
 
 func TestMatches(t *testing.T) {
     var mask Hostmask = "user!ident@host"
-    var bad_pattern Hostmask = "user!dontmatch@*"
-    var good_pattern Hostmask = "user!*@host"
 
-    if mask.Matches(bad_pattern) {
-        t.Errorf("mask should not match bad_pattern")
+    var bad_patterns = []Hostmask{
+        "baduser!*@*",
+        "baduser!*@host",
+        "baduser!ident@host",
+        "*!badident@*",
+        "*!badident@host",
+        "user!badident@host",
+        "*!*@badhost",
+        "user!*@badhost",
+        "user!ident@badhost",
+        "baduser!badident@badhost",
     }
 
-    if bad_pattern.Matches(mask) {
-        t.Errorf("bad_pattern should not match mask")
+    var good_patterns = []Hostmask{
+        "user!ident@host",
+        "user!ident@*",
+        "user!*@*",
+        "*!*@*",
+        "*!ident@*",
+        "*!ident@host",
+        "*!*@host",
     }
 
-    if !mask.Matches(good_pattern) {
-        t.Errorf("mask should match good_pattern")
+    for _, pattern := range bad_patterns {
+        if mask.Matches(pattern) {
+            t.Errorf("mask '%v' matched pattern '%v'", mask, pattern)
+        }
+        if pattern.Matches(mask) {
+            t.Errorf("pattern '%v' matched mask '%v'", pattern, mask)
+        }
     }
 
-    if !good_pattern.Matches(mask) {
-        t.Errorf("good_pattern should match mask")
+    for _, pattern := range good_patterns {
+        if !mask.Matches(pattern) {
+            t.Errorf("mask '%v' did not match pattern '%v'", mask, pattern)
+        }
+        if !pattern.Matches(mask) {
+            t.Errorf("pattern '%v' did not match mask '%v'", pattern, mask)
+        }
     }
 
     if !mask.Matches("*") {
