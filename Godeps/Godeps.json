@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/chooper/go-bot",
+	"ImportPath": "github.com/chooper/gobut",
 	"GoVersion": "go1.1.2",
 	"Deps": [
 		{

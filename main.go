@@ -2,9 +2,9 @@
 package main
 
 import (
-	"github.com/chooper/go-bot/botconf"
+	"github.com/chooper/gobut/botconf"
 	"flag"
-	"github.com/chooper/go-bot/handlers"
+	"github.com/chooper/gobut/handlers"
 	"github.com/mikeclarke/go-irclib"
 	"log"
 )

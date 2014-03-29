@@ -1,1 +1,1 @@
-bot: go-bot
+bot: gobut

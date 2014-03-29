@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-	"github.com/chooper/go-bot/robutdb"
+	"github.com/chooper/gobut/robutdb"
 )
 
 type ChannelState struct {
