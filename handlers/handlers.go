@@ -141,7 +141,7 @@ func FuckYeahHandler(event *irc.Event) {
     r, err := http.Get(uri)
     defer r.Body.Close()
 
-    if err == nil {
+    if err != nil {
         return
     }
 
