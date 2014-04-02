@@ -4,11 +4,11 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/chooper/steamstatus-api/poller",
-			"Rev": "9861b5442b7668f9bbb10183443ad085cb58f916"
+			"Rev": "5f9db232a7b0b016bcdd3782fae1df4268afac7c"
 		},
 		{
 			"ImportPath": "github.com/chooper/steamstatus-api/profiles",
-			"Rev": "9861b5442b7668f9bbb10183443ad085cb58f916"
+			"Rev": "5f9db232a7b0b016bcdd3782fae1df4268afac7c"
 		},
 		{
 			"ImportPath": "github.com/lib/pq",

@@ -18,14 +18,19 @@ type ProfileData struct {
     InGame          string  `json:"ingame"`
 }
 
-func ParseProfile(response_body *string) ProfileData {
+type ProfileResponse struct {
+    Profile         ProfileData
+    Error           error
+}
+
+func ParseProfile(response_body *string) (ProfileData, error) {
     var profile ProfileData
     json_regex := regexp.MustCompile(`g_rgProfileData = (.*);`)
     json_matches := json_regex.FindStringSubmatch(*response_body)
 
     if len(json_matches) > 0 {
         if err := json.Unmarshal([]byte(json_matches[1]), &profile); err != nil {
-            panic(err)
+            return ProfileData{}, err
         }
     }
 
@@ -46,20 +51,20 @@ func ParseProfile(response_body *string) ProfileData {
             profile.InGame = gamename_matches[1]
         }
     }
-    return profile
+    return profile, nil
 }
 
-func GetProfile(username string) ProfileData {
+func GetProfile(username string) (ProfileData, error) {
     // Download the profile from steam
     profile_url := "http://steamcommunity.com/id/" + username + "/"
     response, err := http.Get(profile_url)
     defer response.Body.Close()
     if err != nil {
-        panic(err)
+        return ProfileData{}, err
     }
     body, err := ioutil.ReadAll(response.Body)
     if err != nil {
-        panic(err)
+        return ProfileData{}, err
     }
     response_body := string(body)
 
@@ -70,7 +75,7 @@ func GetProfile(username string) ProfileData {
 func FetchProfiles(usernames []string) []ProfileData {
     var profile_count int = len(usernames)
     var profiles = make([]ProfileData, profile_count)
-    var profile_c = make(chan ProfileData)
+    var profile_c = make(chan ProfileResponse)
 
     // Request multiple users at once
     for _, username := range usernames {
@@ -81,8 +86,10 @@ func FetchProfiles(usernames []string) []ProfileData {
     timeout := time.After(1000 * time.Millisecond)
     for idx := 0; idx < profile_count; idx++ {
         select {
-        case profile := <- profile_c:
-            profiles[idx] = profile
+        case response := <- profile_c:
+            if response.Error == nil {
+                profiles[idx] = response.Profile
+            }
         case <- timeout:
             log.Print("Timed out!")
             break
@@ -91,10 +98,17 @@ func FetchProfiles(usernames []string) []ProfileData {
     return profiles
 }
 
-func FetchProfile(username string, c chan ProfileData) {
-    fanout_c := make(chan ProfileData)
+func FetchProfile(username string, c chan ProfileResponse) {
+    fanout_c := make(chan ProfileResponse)
     for i := 0; i < 3; i++ {
-        go func() { fanout_c <- GetProfile(username) }()
+        go func() {
+            p, err := GetProfile(username)
+            response := ProfileResponse{
+                Profile: p,
+                Error:  err,
+            }
+            fanout_c <- response
+        }()
     }
     select {
     case profile := <- fanout_c:
