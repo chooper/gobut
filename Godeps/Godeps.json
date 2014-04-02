@@ -3,6 +3,14 @@
 	"GoVersion": "go1.1.2",
 	"Deps": [
 		{
+			"ImportPath": "github.com/chooper/steamstatus-api/poller",
+			"Rev": "9861b5442b7668f9bbb10183443ad085cb58f916"
+		},
+		{
+			"ImportPath": "github.com/chooper/steamstatus-api/profiles",
+			"Rev": "9861b5442b7668f9bbb10183443ad085cb58f916"
+		},
+		{
 			"ImportPath": "github.com/lib/pq",
 			"Rev": "61a77393e5a111ed4838f0fe24c0bf81361fd517"
 		},
