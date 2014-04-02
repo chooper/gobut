@@ -14,4 +14,4 @@ Variable | Description | Example
 `BOTNAME` | The bot's IRC nickname | MyBot
 `IRC_ADDRESS` | The address to the IRC server | irc.example.com:6667
 `IRC_CHANNEL` | The channel to join | #bots
-
+`POLL_USERNAMES` | Steam usernames to poll for game status | foxhop,japherwocky
