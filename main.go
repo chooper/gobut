@@ -54,14 +54,14 @@ func main() {
 }
 
 func poller_listener(c *irc.IRCClient, irc_chan string, ch chan poller.Notification) {
-    for {
-        select {
-            case n := <- ch:
-                for _, delta := range n.Changes {
-                    c.Privmsgf(irc_chan, "%s has started playing %s", delta.Who, delta.NewState)
-                }
-        }
-    }
+	for {
+	    select {
+	        case n := <- ch:
+	            for _, delta := range n.Changes {
+	                c.Privmsgf(irc_chan, "%s has started playing %s", delta.Who, delta.NewState)
+	            }
+	    }
+	}
 }
 
 func launch_poller(c *irc.IRCClient, irc_chan string) {
@@ -78,6 +78,6 @@ func launch_poller(c *irc.IRCClient, irc_chan string) {
 
 	// Start the poller
 	go p.Loop()
-    go poller_listener(c, irc_chan, ch)
+	go poller_listener(c, irc_chan, ch)
 }
 
