@@ -5,6 +5,7 @@ import (
 	"github.com/chooper/gobut/botconf"
 	"flag"
 	"github.com/chooper/gobut/handlers"
+	sp "github.com/chooper/gobut/steam-poller"
 	"github.com/mikeclarke/go-irclib"
 	"github.com/chooper/steamstatus-api/poller"
 	"strings"
@@ -47,7 +48,7 @@ func main() {
 	}
 
 	// Set up steam poller
-	launch_poller(client, irc_chan)
+	sp.RunPoller(client, irc_chan)
 
 	// Run loop
 	client.Run()
