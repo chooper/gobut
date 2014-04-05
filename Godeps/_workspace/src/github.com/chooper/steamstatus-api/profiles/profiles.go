@@ -83,7 +83,7 @@ func FetchProfiles(usernames []string) []ProfileData {
     }
 
     // Wait for responses
-    timeout := time.After(1000 * time.Millisecond)
+    timeout := time.After(10 * time.Second)
     for idx := 0; idx < profile_count; idx++ {
         select {
         case response := <- profile_c:
@@ -99,7 +99,7 @@ func FetchProfiles(usernames []string) []ProfileData {
 }
 
 func FetchProfile(username string, c chan ProfileResponse) {
-    fanout_c := make(chan ProfileResponse)
+    fanout_c := make(chan ProfileResponse, 1)
     for i := 0; i < 3; i++ {
         go func() {
             p, err := GetProfile(username)
@@ -107,12 +107,14 @@ func FetchProfile(username string, c chan ProfileResponse) {
                 Profile: p,
                 Error:  err,
             }
-            fanout_c <- response
+            select {
+                case fanout_c <- response:
+                default:
+            }
         }()
     }
     select {
-    case profile := <- fanout_c:
-        c <- profile
+    case c <- <- fanout_c:
     }
 }
 

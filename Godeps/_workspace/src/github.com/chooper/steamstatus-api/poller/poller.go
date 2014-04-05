@@ -3,7 +3,8 @@ package poller
 
 import (
     //"log"
-    "github.com/chooper/steamstatus-api/profiles"
+    "github.com/chooper/steamstatus-api/client"
+    "os"
     "time"
 )
 
@@ -33,11 +34,18 @@ type Poller struct {
 
 func (p Poller) Loop() {
     state := make(KnownState)
+    api := client.Connect(os.Getenv("STEAMSTATUS_API")) // TODO handle if not exists
 
     for {
         var notification Notification
         // TODO: Query API instead of requesting this directly?
-        profiles := profiles.FetchProfiles(p.Usernames)
+        //profiles := profiles.FetchProfiles(p.Usernames)
+        profiles, err := api.Profiles(p.Usernames)
+        if err != nil {
+            // TODO log
+            time.Sleep(10 * time.Second)
+            continue
+        }
 
         for _, profile := range profiles {
             // Don't notify when not in a game (even if player just left one)
