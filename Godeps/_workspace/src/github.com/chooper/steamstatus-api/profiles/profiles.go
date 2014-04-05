@@ -91,7 +91,7 @@ func FetchProfiles(usernames []string) []ProfileData {
                 profiles[idx] = response.Profile
             }
         case <- timeout:
-            log.Print("Timed out!")
+            log.Print("FetchProfiles timed out!")
             break
         }
     }
