@@ -29,6 +29,8 @@ func main() {
     client.AddHandler(handlers.ModeHandler)
     client.AddHandler(handlers.FuckYeahHandler)
     client.AddHandler(handlers.URLHandler)
+    client.AddHandler(handlers.TopSharersHandler)
+    client.AddHandler(handlers.RandomURLHandler)
     
     // Connect to server
     err := client.Connect(config.Server)

@@ -196,3 +196,48 @@ func URLHandler(event *irc.Event) {
     go robutdb.SaveURL(info.Uri, info.Title, event.Prefix)
 }
 
+func TopSharersHandler(event *irc.Event) {
+    if event.Command != "PRIVMSG" {
+        return
+    }
+
+    message_RE := regexp.MustCompile(`^\.top\s*$`)
+    matches := message_RE.FindStringSubmatch(event.Arguments[1])
+
+    if len(matches) < 1 {
+        return
+    }
+
+    // TODO Hand this off to a goroutine
+    stats, err := robutdb.TopSharers()
+    if err != nil {
+        log.Print(err)
+        return
+    }
+
+    event.Client.Privmsg(event.Arguments[0], "Top 5 URL sharers for the past week")
+    for k := range stats {
+        event.Client.Privmsgf(event.Arguments[0], "%s: %d urls", k, stats[k])
+    }
+}
+
+func RandomURLHandler(event *irc.Event) {
+    if event.Command != "PRIVMSG" {
+        return
+    }
+
+    message_RE := regexp.MustCompile(`^\.random\s*$`)
+    matches := message_RE.FindStringSubmatch(event.Arguments[1])
+
+    if len(matches) < 1 {
+        return
+    }
+
+    url, err := robutdb.RandomURL()
+    if err != nil {
+        log.Print(err)
+        return
+    }
+    event.Client.Privmsg(event.Arguments[0], url)
+}
+
