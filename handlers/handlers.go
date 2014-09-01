@@ -249,7 +249,6 @@ func SearchURLHandler(event *irc.Event) {
     message_RE := regexp.MustCompile(`^\.search\s*(.*)$`)
     matches := message_RE.FindStringSubmatch(event.Arguments[1])
 
-
     if len(matches) < 1 {
         return
     }
@@ -259,6 +258,7 @@ func SearchURLHandler(event *irc.Event) {
     url, err := robutdb.SearchURL(query)
     if err != nil {
         log.Print(err)
+        event.Client.Privmsgf(event.Arguments[0], "I could not find any URLs matching '%s' this time", query)
         return
     }
     event.Client.Privmsg(event.Arguments[0], url)
