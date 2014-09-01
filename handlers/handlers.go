@@ -241,3 +241,26 @@ func RandomURLHandler(event *irc.Event) {
     event.Client.Privmsg(event.Arguments[0], url)
 }
 
+func SearchURLHandler(event *irc.Event) {
+    if event.Command != "PRIVMSG" {
+        return
+    }
+
+    message_RE := regexp.MustCompile(`^\.search\s*(.*)$`)
+    matches := message_RE.FindStringSubmatch(event.Arguments[1])
+
+
+    if len(matches) < 1 {
+        return
+    }
+
+    query := strings.Join(strings.Fields(matches[0])[1:], " ")
+
+    url, err := robutdb.SearchURL(query)
+    if err != nil {
+        log.Print(err)
+        return
+    }
+    event.Client.Privmsg(event.Arguments[0], url)
+}
+

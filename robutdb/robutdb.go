@@ -9,6 +9,45 @@ import (
     "database/sql"
 )
 
+func SearchURL(q string) (string, error) {
+    // Grab env var, return if not set
+    database_url := os.Getenv("DATABASE_URL")
+    if database_url == "" {
+        return "", errors.New("DATABASE_URL not set")
+    }
+
+    // Connect to DB
+    db, err := sql.Open("postgres", database_url)
+
+    if err != nil {
+        log.Print(err)
+        return "", err
+    }
+
+    q = "%" + q + "%"
+    rows, err := db.Query(`SELECT url
+        FROM urls
+        WHERE
+        title ILIKE $1
+        LIMIT 1`, q)
+    defer rows.Close()
+
+    if err != nil {
+        log.Print(err)
+        return "", err
+    }
+
+    // Select first & only result
+    rows.Next()
+    var url string
+    err = rows.Scan(&url)
+    if err != nil {
+        log.Print(err)
+        return "", err
+    }
+    return url, nil
+}
+
 func RandomURL() (string, error) {
     // Grab env var, return if not set
     database_url := os.Getenv("DATABASE_URL")
