@@ -264,3 +264,25 @@ func SearchURLHandler(event *irc.Event) {
     event.Client.Privmsg(event.Arguments[0], url)
 }
 
+func CountURLsHandler(event *irc.Event) {
+    if event.Command != "PRIVMSG" {
+        return
+    }
+
+    message_RE := regexp.MustCompile(`^\.stats\s*$`)
+    matches := message_RE.FindStringSubmatch(event.Arguments[1])
+
+    if len(matches) < 1 {
+        return
+    }
+
+    // TODO Hand this off to a goroutine
+    count, err := robutdb.CountURLs()
+    if err != nil {
+        log.Print(err)
+        return
+    }
+
+    event.Client.Privmsgf(event.Arguments[0], "There are %d unique URLs", count)
+}
+

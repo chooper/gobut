@@ -32,6 +32,7 @@ func main() {
     client.AddHandler(handlers.TopSharersHandler)
     client.AddHandler(handlers.RandomURLHandler)
     client.AddHandler(handlers.SearchURLHandler)
+    client.AddHandler(handlers.CountURLsHandler)
     
     // Connect to server
     err := client.Connect(config.Server)

@@ -138,6 +138,41 @@ func TopSharers() (map[string]int, error) {
     return result, nil
 }
 
+func CountURLs() (int, error) {
+    // Grab env var, return if not set
+    database_url := os.Getenv("DATABASE_URL")
+    if database_url == "" {
+        return -1, errors.New("DATABASE_URL not set")
+    }
+
+    // Connect to DB
+    db, err := sql.Open("postgres", database_url)
+
+    if err != nil {
+        log.Print(err)
+        return -1, err
+    }
+
+    // TODO Don't hardcode the limit
+    rows, err := db.Query(`SELECT COUNT(DISTINCT url) FROM urls`)
+    defer rows.Close()
+
+    if err != nil {
+        log.Print(err)
+        return -1, err
+    }
+
+    // Select first & only result
+    rows.Next()
+    var count int
+    err = rows.Scan(&count)
+    if err != nil {
+        log.Print(err)
+        return -1, err
+    }
+    return count, nil
+}
+
 func SaveURL(url string, title string, prefix string) error {
     // Grab env var, return if not set
     database_url := os.Getenv("DATABASE_URL")
