@@ -8,6 +8,7 @@ import (
     sp "github.com/chooper/gobut/steam-poller"
     "github.com/mikeclarke/go-irclib"
     "log"
+    "time"
 )
 
 func main() {
@@ -43,10 +44,15 @@ func main() {
     
     // Join channels
     var irc_chan string
-    for _, irc_chan = range config.Channels {
-        log.Printf("%s: Joining channel %q\n", config.Botname, irc_chan)
-        client.Join(irc_chan)
-    }
+    go func() {
+        for {
+            for _, irc_chan = range config.Channels {
+                log.Printf("%s: Joining channel %q\n", config.Botname, irc_chan)
+                client.Join(irc_chan)
+            }
+            time.Sleep(time.Duration(10) * time.Second)
+        }
+    }()
 
     // Set up steam poller
     sp.RunPoller(client, irc_chan)
