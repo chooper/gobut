@@ -54,8 +54,11 @@ func main() {
         }
     }()
 
-    // Set up steam poller
-    sp.RunPoller(client, irc_chan)
+    // Set up steam poller for each channel
+    for _, irc_chan = range config.Channels {
+        log.Printf("%s: Setting up steam poller for channel %q\n", config.Botname, irc_chan)
+        sp.RunPoller(client, irc_chan)
+    }
 
     // Run loop
     client.Run()
