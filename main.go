@@ -1,72 +1,71 @@
-
 package main
 
 import (
-    "github.com/chooper/gobut/botconf"
-    "flag"
-    "github.com/chooper/gobut/handlers"
-    mc "github.com/chooper/gobut/mc-poller"
-    sp "github.com/chooper/gobut/steam-poller"
-    "github.com/mikeclarke/go-irclib"
-    "log"
-    "time"
+	"flag"
+	"github.com/mikeclarke/go-irclib"
+	"github.com/chooper/gobut/botconf"
+	"github.com/chooper/gobut/handlers"
+	mc "github.com/chooper/gobut/mc-poller"
+	sp "github.com/chooper/gobut/steam-poller"
+	"log"
+	"time"
 )
 
 func main() {
-    flag.Parse()
+	flag.Parse()
 
-    // Read the config
-    config := botconf.ReadConfig()
+	// Read the config
+	config := botconf.ReadConfig()
 
-    // Set up IRC client
-    client := irc.New(config.Nickname, config.Botname)
+	// Set up IRC client
+	client := irc.New(config.Nickname, config.Botname)
 
-    // Register handlers
-    client.AddHandler(handlers.DebugHandler)
-    client.AddHandler(handlers.EchoHandler)
-    client.AddHandler(handlers.NamesHandler)
-    client.AddHandler(handlers.PartHandler)
-    client.AddHandler(handlers.QuitHandler)
-    client.AddHandler(handlers.JoinHandler)
-    client.AddHandler(handlers.ModeHandler)
-    client.AddHandler(handlers.FuckYeahHandler)
-    client.AddHandler(handlers.URLHandler)
-    client.AddHandler(handlers.TopSharersHandler)
-    client.AddHandler(handlers.RandomURLHandler)
-    client.AddHandler(handlers.SearchURLHandler)
-    client.AddHandler(handlers.CountURLsHandler)
-    
-    // Connect to server
-    err := client.Connect(config.Server)
-    if err != nil {
-        // TODO: Don't crash - recover and connect to new server
-        log.Fatalf("Error connecting to server %q: %s\n", config.Server, err)
-    }
-    
-    // Join channels
-    var irc_chan string
-    go func() {
-        for {
-            for _, irc_chan = range config.Channels {
-                log.Printf("%s: Joining channel %q\n", config.Botname, irc_chan)
-                client.Join(irc_chan)
-            }
-            time.Sleep(time.Duration(10) * time.Second)
-        }
-    }()
+	// Register handlers
+	client.AddHandler(handlers.DebugHandler)
+	client.AddHandler(handlers.EchoHandler)
+	client.AddHandler(handlers.NamesHandler)
+	client.AddHandler(handlers.PartHandler)
+	client.AddHandler(handlers.QuitHandler)
+	client.AddHandler(handlers.JoinHandler)
+	client.AddHandler(handlers.ModeHandler)
+	client.AddHandler(handlers.FuckYeahHandler)
+	client.AddHandler(handlers.URLHandler)
+	client.AddHandler(handlers.TopSharersHandler)
+	client.AddHandler(handlers.RandomURLHandler)
+	client.AddHandler(handlers.SearchURLHandler)
+	client.AddHandler(handlers.CountURLsHandler)
 
-    // Set up minecraft poller for each channel
-    for _, irc_chan = range config.Channels {
-        log.Printf("%s: Setting up minecraft poller for channel %q\n", config.Botname, irc_chan)
-        mc.RunPoller(client, irc_chan)
-    }
+	// Connect to server
+	err := client.Connect(config.Server)
+	if err != nil {
+		// TODO: Don't crash - recover and connect to new server
+		log.Fatalf("Error connecting to server %q: %s\n", config.Server, err)
+	}
 
-    // Set up steam poller for each channel
-    for _, irc_chan = range config.Channels {
-        log.Printf("%s: Setting up steam poller for channel %q\n", config.Botname, irc_chan)
-        sp.RunPoller(client, irc_chan)
-    }
+	// Join channels
+	var irc_chan string
+	go func() {
+		for {
+			for _, irc_chan = range config.Channels {
+				log.Printf("%s: Joining channel %q\n", config.Botname, irc_chan)
+				client.Join(irc_chan)
+			}
+			time.Sleep(time.Duration(10) * time.Second)
+		}
+	}()
 
-    // Run loop
-    client.Run()
+	// Set up minecraft poller for each channel
+	for _, irc_chan = range config.Channels {
+		log.Printf("%s: Setting up minecraft poller for channel %q\n", config.Botname, irc_chan)
+		mc.RunPoller(client, irc_chan)
+	}
+
+	// Set up steam poller for each channel
+	for _, irc_chan = range config.Channels {
+		log.Printf("%s: Setting up steam poller for channel %q\n", config.Botname, irc_chan)
+		sp.RunPoller(client, irc_chan)
+	}
+
+	// Run loop
+	client.Run()
 }
