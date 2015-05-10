@@ -12,7 +12,7 @@ func poller_listener(c *irc.IRCClient, irc_chan string, ch chan poller.Notificat
         select {
             case n := <- ch:
                 for _, delta := range n.Changes {
-                    c.Privmsgf(irc_chan, "%s has %s playing Minecraft on %s", delta.Who, delta.Direction, os.Getenv("MINECRAFT_SERVER"))
+                    c.Privmsgf(irc_chan, "%s has %s Minecraft on %s", delta.Who, delta.Direction, os.Getenv("MINECRAFT_SERVER"))
                 }
         }
     }
