@@ -5,6 +5,7 @@ import (
     "github.com/chooper/gobut/botconf"
     "flag"
     "github.com/chooper/gobut/handlers"
+    mc "github.com/chooper/gobut/mc-poller"
     sp "github.com/chooper/gobut/steam-poller"
     "github.com/mikeclarke/go-irclib"
     "log"
@@ -54,6 +55,12 @@ func main() {
         }
     }()
 
+    // Set up minecraft poller for each channel
+    for _, irc_chan = range config.Channels {
+        log.Printf("%s: Setting up minecraft poller for channel %q\n", config.Botname, irc_chan)
+        mc.RunPoller(client, irc_chan)
+    }
+
     // Set up steam poller for each channel
     for _, irc_chan = range config.Channels {
         log.Printf("%s: Setting up steam poller for channel %q\n", config.Botname, irc_chan)
@@ -63,4 +70,3 @@ func main() {
     // Run loop
     client.Run()
 }
-
