@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"github.com/mikeclarke/go-irclib"
 	"github.com/chooper/gobut/botconf"
 	"github.com/chooper/gobut/handlers"
 	sp "github.com/chooper/gobut/steam-poller"
+	"github.com/mikeclarke/go-irclib"
 	"log"
 	"time"
 )
