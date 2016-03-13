@@ -26,6 +26,7 @@ func main() {
 	client.AddHandler(handlers.PartHandler)
 	client.AddHandler(handlers.QuitHandler)
 	client.AddHandler(handlers.JoinHandler)
+	client.AddHandler(handlers.AutoOpHandler)
 	client.AddHandler(handlers.ModeHandler)
 	client.AddHandler(handlers.FuckYeahHandler)
 	client.AddHandler(handlers.URLHandler)

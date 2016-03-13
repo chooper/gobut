@@ -107,6 +107,14 @@ func JoinHandler(event *irc.Event) {
 	event.Client.SendRawf("NAMES %s", event.Arguments[0])
 }
 
+func AutoOpHandler(event *irc.Event) {
+	if event.Command != "JOIN" {
+		return
+	}
+	nick := strings.Split(event.Prefix, "!")[0]
+	event.Client.SendRawf("MODE %s +o %s", event.Arguments[0], nick)
+}
+
 func QuitHandler(event *irc.Event) {
 	if event.Command != "QUIT" {
 		return
