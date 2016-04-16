@@ -170,8 +170,11 @@ func URLHandler(event *irc.Event) {
 
 	target_uri := matches[0]
 
-	// TODO: Don't hardcode this
-	api_uri, err := url.Parse("http://urinfo.herokuapp.com/fetch")
+	base_uri := os.Getenv("URINFO_API")
+	if base_uri == "" {
+		return
+	}
+	api_uri, err := url.Parse(base_uri)
 	if err != nil {
 		log.Print(err)
 	}
