@@ -134,6 +134,38 @@ func ModeHandler(event *irc.Event) {
 	event.Client.SendRawf("NAMES %s", event.Arguments[0])
 }
 
+func FrostDateHandler(event *irc.Event) {
+	if event.Command != "PRIVMSG" {
+		return
+	}
+
+	args = string.Fields(event.Arguments[1])
+
+	if args[0] != ".frost" {
+		return
+	}
+
+	zip := args[1]
+	response, err := http.Get(uri)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	response_RE := regexp.MustCompile(`<table><tr><th>Climate Station</th><th>Last Spring Frost (50% Probability)</th><th>First Fall Frost (50% Probability)</th><th>Growing Season</th></tr><tr><td>([^<]+)</td><td>([^<]+)</td><td>([^<]+)</td><td>([^<]+)</td></tr></table>`)
+	matches := response_RE.FindStringSubmatch(body)
+	if len(matches) < 1 {
+		return
+	}
+
+	event.Client.Privmsgf(event.Arguments[0], "Climate station: %s / First fall frost: %s / Last spring frost: %s / Growing season: %s", matches[0], matches[2], matches[1], matches[3])
+}
+
 func URLHandler(event *irc.Event) {
 	if event.Command != "PRIVMSG" {
 		return
