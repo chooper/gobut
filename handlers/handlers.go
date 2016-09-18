@@ -65,14 +65,6 @@ func EchoHandler(event *irc.Event) {
 	event.Client.Privmsg(event.Arguments[0], echo)
 }
 
-/*
-2013/06/15 18:58:53 XXX In channel =  [GoTest @hoop]
-2013/06/15 18:58:53 User joined channel =  [#sandbox]
-2013/06/15 18:58:53 Mode change =  [GoTest +i]
-2013/06/15 18:58:57 ->  &{:hoop!~hoop@X.X.X.X MODE #sandbox +o GoTest hoop!~hoop@X.X.X.X MODE [#sandbox +o GoTest] 0xc2000b1000 false}
-2013/06/15 18:58:57 Mode change =  [#sandbox +o GoTest]
-*/
-
 func NamesHandler(event *irc.Event) {
 	if event.Command != "353" {
 		return
@@ -92,6 +84,16 @@ func NamesHandler(event *irc.Event) {
 
 	server_state.Channels[irc_chan] = ChannelState{server, irc_chan, users}
 	Servers[server] = server_state
+
+	// HACK: make gobut op everyone
+	for _, user := range users {
+		if string(user[0]) == "@" { // skip already-opped people
+			continue
+		}
+		// TODO: handle people who are voiced
+		nick := strings.Split(user, "!")[0]
+		event.Client.SendRawf("MODE %s +o %s", irc_chan, nick)
+	}
 }
 
 func PartHandler(event *irc.Event) {

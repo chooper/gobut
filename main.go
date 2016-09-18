@@ -49,6 +49,7 @@ func main() {
 			for _, irc_chan = range config.Channels {
 				log.Printf("%s: Joining channel %q\n", config.Botname, irc_chan)
 				client.Join(irc_chan)
+				client.SendRawf("NAMES %s", irc_chan)
 			}
 			time.Sleep(time.Duration(10) * time.Second)
 		}
