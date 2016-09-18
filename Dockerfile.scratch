@@ -1,0 +1,6 @@
+# build with:
+# $ CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o gobut .
+# $ docker build -t chooper/gobut -f Dockerfile.scratch .
+FROM scratch
+ADD gobut /
+CMD ["/gobut"]
