@@ -90,7 +90,9 @@ func NamesHandler(event *irc.Event) {
 		if string(user[0]) == "@" { // skip already-opped people
 			continue
 		}
-		// TODO: handle people who are voiced
+		if string(user[0]) == "+" { // user is voiced
+			user = user[1:]
+		}
 		nick := strings.Split(user, "!")[0]
 		event.Client.SendRawf("MODE %s +o %s", irc_chan, nick)
 	}
