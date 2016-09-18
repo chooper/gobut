@@ -139,13 +139,17 @@ func FrostDateHandler(event *irc.Event) {
 		return
 	}
 
-	args = string.Fields(event.Arguments[1])
+	args := strings.Fields(event.Arguments[1])
 
 	if args[0] != ".frost" {
 		return
 	}
 
 	zip := args[1]
+	uri := "http://www.almanac.com/gardening/frostdates/zipcode/" + zip
+
+	log.Printf("FrostDateHandler invoked. Zip: %s", zip)
+
 	response, err := http.Get(uri)
 	if err != nil {
 		log.Print(err)
@@ -157,13 +161,14 @@ func FrostDateHandler(event *irc.Event) {
 		log.Print(err)
 		return
 	}
-	response_RE := regexp.MustCompile(`<table><tr><th>Climate Station</th><th>Last Spring Frost (50% Probability)</th><th>First Fall Frost (50% Probability)</th><th>Growing Season</th></tr><tr><td>([^<]+)</td><td>([^<]+)</td><td>([^<]+)</td><td>([^<]+)</td></tr></table>`)
-	matches := response_RE.FindStringSubmatch(body)
+	response_RE := regexp.MustCompile(`<table><tr><th>Climate Station<\/th><th>Last Spring Frost \(50% Probability\)<\/th><th>First Fall Frost \(50% Probability\)<\/th><th>Growing Season<\/th><\/tr><tr><td>([^<]+)<\/td><td>([^<]+)<\/td><td>([^<]+)<\/td><td>([^<]+)<\/td><\/tr><\/table>`)
+	matches := response_RE.FindStringSubmatch(string(body))
 	if len(matches) < 1 {
 		return
 	}
 
-	event.Client.Privmsgf(event.Arguments[0], "Climate station: %s / First fall frost: %s / Last spring frost: %s / Growing season: %s", matches[0], matches[2], matches[1], matches[3])
+	log.Printf("FrostDateHandler matches: %q", matches)
+	event.Client.Privmsgf(event.Arguments[0], "Climate station: %s / First fall frost: %s / Last spring frost: %s / Growing season: %s days", matches[1], matches[3], matches[2], matches[4])
 }
 
 func URLHandler(event *irc.Event) {
