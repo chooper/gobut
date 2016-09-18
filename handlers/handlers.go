@@ -218,7 +218,7 @@ func URLHandler(event *irc.Event) {
 		return
 	}
 
-	if info.Uri == nil { // happens if we get valid JSON but not a urinfo struct
+	if info.Uri == nil || info.Uri == "" { // happens if we get valid JSON but not a urinfo struct
 		log.Debug("URLHandler: info.Uri was nil, not saving URL")
 	}
 
