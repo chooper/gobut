@@ -132,32 +132,6 @@ func ModeHandler(event *irc.Event) {
 	event.Client.SendRawf("NAMES %s", event.Arguments[0])
 }
 
-func FuckYeahHandler(event *irc.Event) {
-	if event.Command != "PRIVMSG" {
-		return
-	}
-
-	message_RE := regexp.MustCompile(`fuck yeah ([\w\d]+)`)
-	matches := message_RE.FindStringSubmatch(event.Arguments[1])
-
-	if len(matches) < 1 {
-		return
-	}
-
-	phrase := matches[1]
-	uri := "http://cch-fuckyeah.herokuapp.com/" + url.QueryEscape(phrase) + ".jpg"
-
-	// see if this url works - sometimes they don't :(
-	r, err := http.Get(uri)
-	defer r.Body.Close()
-
-	if err != nil {
-		return
-	}
-
-	event.Client.Privmsg(event.Arguments[0], uri)
-}
-
 func URLHandler(event *irc.Event) {
 	if event.Command != "PRIVMSG" {
 		return

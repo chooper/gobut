@@ -28,7 +28,6 @@ func main() {
 	client.AddHandler(handlers.JoinHandler)
 	client.AddHandler(handlers.AutoOpHandler)
 	client.AddHandler(handlers.ModeHandler)
-	client.AddHandler(handlers.FuckYeahHandler)
 	client.AddHandler(handlers.URLHandler)
 	client.AddHandler(handlers.TopSharersHandler)
 	client.AddHandler(handlers.RandomURLHandler)
