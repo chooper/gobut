@@ -3,6 +3,7 @@ package botconf
 import (
 	"log"
 	"os"
+	"strings"
 )
 
 type Config struct {
@@ -20,10 +21,7 @@ func ReadConfig() *Config {
 	}
 
 	server := os.Getenv("IRC_ADDRESS")
-
-	// TODO: Allow multiple channels
-	channels := make([]string, 1)
-	channels[0] = os.Getenv("IRC_CHANNEL")
+	channels := strings.Split(os.Getenv("IRC_CHANNEL"), ",")
 
 	config := Config{botname, nickname, server, channels}
 	return &config
