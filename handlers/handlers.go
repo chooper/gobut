@@ -11,6 +11,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type ChannelState struct {
@@ -93,6 +94,7 @@ func NamesHandler(event *irc.Event) {
 		if string(user[0]) == "+" { // user is voiced
 			user = user[1:]
 		}
+		time.Sleep(time.Duration(10) * time.Second)
 		nick := strings.Split(user, "!")[0]
 		event.Client.SendRawf("MODE %s +o %s", irc_chan, nick)
 	}
