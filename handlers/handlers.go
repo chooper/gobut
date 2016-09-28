@@ -220,8 +220,8 @@ func URLHandler(event *irc.Event) {
 		return
 	}
 
-	if info.Uri == nil || info.Uri == "" { // happens if we get valid JSON but not a urinfo struct
-		log.Debug("URLHandler: info.Uri was nil, not saving URL")
+	if info.Uri == "" { // happens if we get valid JSON but not a urinfo struct
+		log.Println("URLHandler: info.Uri was empty, not saving URL")
 	}
 
 	go robutdb.SaveURL(info.Uri, info.Title, event.Prefix)
