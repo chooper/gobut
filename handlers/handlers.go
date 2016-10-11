@@ -14,40 +14,10 @@ import (
 	"time"
 )
 
-type ChannelState struct {
-	Server  string
-	Channel string
-	Users   []string
-}
-
-type ServerState struct {
-	Server   string
-	Channels map[string]ChannelState
-}
-
-var Servers = make(map[string]*ServerState)
-
 type Urinfo struct {
 	Uri     string            `json:"uri"`
 	Title   string            `json:"title"`
 	Headers map[string]string `json:"headers"`
-}
-
-func DebugHandler(event *irc.Event) {
-	log.Println("-> ", event)
-
-	if event.Command != "PRIVMSG" {
-		return
-	}
-
-	message_RE := regexp.MustCompile(`^\.dump(.*)$`)
-	matches := message_RE.FindStringSubmatch(event.Arguments[1])
-
-	if len(matches) < 1 {
-		return
-	}
-
-	event.Client.Privmsgf(event.Arguments[0], "state: %q", Servers)
 }
 
 func EchoHandler(event *irc.Event) {
@@ -71,20 +41,8 @@ func NamesHandler(event *irc.Event) {
 		return
 	}
 
-	server := event.Client.Server
 	irc_chan := event.Arguments[2]
 	users := strings.Fields(event.Arguments[3]) // TODO: Track modes
-
-	var server_state *ServerState
-	var ok bool
-	if server_state, ok = Servers[server]; !ok {
-		server_state = new(ServerState)
-		server_state.Server = server
-		server_state.Channels = make(map[string]ChannelState)
-	}
-
-	server_state.Channels[irc_chan] = ChannelState{server, irc_chan, users}
-	Servers[server] = server_state
 
 	// HACK: make gobut op everyone
 	for _, user := range users {
@@ -124,13 +82,6 @@ func AutoOpHandler(event *irc.Event) {
 
 func QuitHandler(event *irc.Event) {
 	if event.Command != "QUIT" {
-		return
-	}
-	event.Client.SendRawf("NAMES %s", event.Arguments[0])
-}
-
-func ModeHandler(event *irc.Event) {
-	if event.Command != "MODE" {
 		return
 	}
 	event.Client.SendRawf("NAMES %s", event.Arguments[0])

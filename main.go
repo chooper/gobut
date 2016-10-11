@@ -20,14 +20,12 @@ func main() {
 	client := irc.New(config.Nickname, config.Botname)
 
 	// Register handlers
-	client.AddHandler(handlers.DebugHandler)
 	client.AddHandler(handlers.EchoHandler)
 	client.AddHandler(handlers.NamesHandler)
 	client.AddHandler(handlers.PartHandler)
 	client.AddHandler(handlers.QuitHandler)
 	client.AddHandler(handlers.JoinHandler)
 	client.AddHandler(handlers.AutoOpHandler)
-	client.AddHandler(handlers.ModeHandler)
 	client.AddHandler(handlers.URLHandler)
 	client.AddHandler(handlers.TopSharersHandler)
 	client.AddHandler(handlers.RandomURLHandler)
