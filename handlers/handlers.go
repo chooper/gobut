@@ -41,21 +41,24 @@ func NamesHandler(event *irc.Event) {
 		return
 	}
 
-	irc_chan := event.Arguments[2]
-	users := strings.Fields(event.Arguments[3]) // TODO: Track modes
-
 	// HACK: make gobut op everyone
-	for _, user := range users {
-		if string(user[0]) == "@" { // skip already-opped people
-			continue
+	op_all := func(event *irc.Event) {
+		irc_chan := event.Arguments[2]
+		users := strings.Fields(event.Arguments[3])
+
+		for _, user := range users {
+			if string(user[0]) == "@" { // skip already-opped people
+				continue
+			}
+			if string(user[0]) == "+" { // user is voiced
+				user = user[1:]
+			}
+			time.Sleep(time.Duration(3) * time.Second)
+			nick := strings.Split(user, "!")[0]
+			event.Client.SendRawf("MODE %s +o %s", irc_chan, nick)
 		}
-		if string(user[0]) == "+" { // user is voiced
-			user = user[1:]
-		}
-		time.Sleep(time.Duration(10) * time.Second)
-		nick := strings.Split(user, "!")[0]
-		event.Client.SendRawf("MODE %s +o %s", irc_chan, nick)
 	}
+	go op_all(event)
 }
 
 func PartHandler(event *irc.Event) {
