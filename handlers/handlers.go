@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	irc "github.com/chooper/go-irclib"
+	"github.com/chooper/gobut/botconf"
 	"github.com/chooper/gobut/robutdb"
-	irc "github.com/mikeclarke/go-irclib"
+	sp "github.com/chooper/gobut/steam-poller"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -18,6 +20,33 @@ type Urinfo struct {
 	Uri     string            `json:"uri"`
 	Title   string            `json:"title"`
 	Headers map[string]string `json:"headers"`
+}
+
+func RegistrationHandler(event *irc.Event) {
+	if event.Command != "001" {
+		return
+	}
+
+	config := botconf.ReadConfig()
+
+	// Join channels
+	var irc_chan string
+	go func() {
+		for {
+			for _, irc_chan = range config.Channels {
+				log.Printf("%s: Joining channel %q\n", config.Botname, irc_chan)
+				event.Client.Join(irc_chan)
+				event.Client.SendRawf("NAMES %s", irc_chan)
+			}
+			time.Sleep(time.Duration(10) * time.Second)
+		}
+	}()
+
+	// Set up steam poller for each channel
+	for _, irc_chan = range config.Channels {
+		log.Printf("%s: Setting up steam poller for channel %q\n", config.Botname, irc_chan)
+		sp.RunPoller(event.Client, irc_chan)
+	}
 }
 
 func EchoHandler(event *irc.Event) {

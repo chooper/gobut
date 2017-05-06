@@ -1,8 +1,8 @@
 package sp
 
 import (
+	"github.com/chooper/go-irclib"
 	"github.com/chooper/steamstatus-api/poller"
-	"github.com/mikeclarke/go-irclib"
 	"log"
 	"os"
 	"strings"

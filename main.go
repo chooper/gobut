@@ -2,12 +2,10 @@ package main
 
 import (
 	"flag"
+	"github.com/chooper/go-irclib"
 	"github.com/chooper/gobut/botconf"
 	"github.com/chooper/gobut/handlers"
-	sp "github.com/chooper/gobut/steam-poller"
-	"github.com/mikeclarke/go-irclib"
 	"log"
-	"time"
 )
 
 func main() {
@@ -20,6 +18,7 @@ func main() {
 	client := irc.New(config.Nickname, config.Botname)
 
 	// Register handlers
+	client.AddHandler(handlers.RegistrationHandler)
 	client.AddHandler(handlers.EchoHandler)
 	client.AddHandler(handlers.NamesHandler)
 	client.AddHandler(handlers.PartHandler)
@@ -36,29 +35,10 @@ func main() {
 	// Connect to server
 	err := client.Connect(config.Server)
 	if err != nil {
-		// TODO: Don't crash - recover and connect to new server
-		log.Fatalf("Error connecting to server %q: %s\n", config.Server, err)
+		log.Printf("Could not connect to server %q: %s\n", config.Server, err)
+		client.Reconnect()
 	}
 
-	// Join channels
-	var irc_chan string
-	go func() {
-		for {
-			for _, irc_chan = range config.Channels {
-				log.Printf("%s: Joining channel %q\n", config.Botname, irc_chan)
-				client.Join(irc_chan)
-				client.SendRawf("NAMES %s", irc_chan)
-			}
-			time.Sleep(time.Duration(10) * time.Second)
-		}
-	}()
-
-	// Set up steam poller for each channel
-	for _, irc_chan = range config.Channels {
-		log.Printf("%s: Setting up steam poller for channel %q\n", config.Botname, irc_chan)
-		sp.RunPoller(client, irc_chan)
-	}
-
-	// Run loop
+	// Run main loop
 	client.Run()
 }
